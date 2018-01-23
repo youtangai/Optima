@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql" // mysql driver
 	"github.com/youtangai/Optima/conductor/config"
+	"github.com/youtangai/Optima/conductor/model"
 )
 
 var (
@@ -34,4 +35,21 @@ func connection() *gorm.DB {
 
 func GetDataBase() *gorm.DB {
 	return DataBase
+}
+
+func RegistLoadIndicator(json model.LoadIndicatorJson) error {
+	hostEntity := new(model.Host)
+	err := DataBase.FirstOrCreate(hostEntity, &model.Host{HostName: json.HostName, HostIP: json.HostIP}).Error
+	if err != nil {
+		return err
+	}
+	loadIndicatorEntity := new(model.LoadIndicator)
+	loadIndicatorEntity.HostID = hostEntity.ID
+	loadIndicatorEntity.Host = *hostEntity
+	loadIndicatorEntity.LoadIndicator = json.LoadIndicator
+	err = DataBase.Create(loadIndicatorEntity).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

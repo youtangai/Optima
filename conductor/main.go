@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/conductor/config"
+	"github.com/youtangai/Optima/conductor/controller"
 )
 
 func main() {
@@ -13,5 +14,6 @@ func main() {
 			"message": "pong",
 		})
 	})
+	router.POST("/load_indicator", controller.RegistLoadIndicator)
 	router.Run(":" + port)
 }
