@@ -1,4 +1,4 @@
-IMAGE_NAME=optima_worker
+IMAGENAME := optima_worker
 
 main: main.go
 	GOOS=linux GOARCH=amd64 go build main.go
@@ -10,14 +10,14 @@ test:
 	go run main.go
 
 build: main
-	docker build -t IMAGE_NAME:latest .
+	docker build -t $(IMAGENAME):latest .
 
-run:
-	docker run -d --name IMAGE_NAME IMAGE_NAME
+run: 
+	docker run -d --name $(IMAGENAME) $(IMAGENAME)
 
 down:
-	docker stop IMAGE_NAME
-	docker rm IMAGE_NAME
+	docker stop $(IMAGENAME)
+	docker rm $(IMAGENAME)
 
 logs:
-	docker logs -f IMAGE_NAME
+	docker logs -f $(IMAGENAME)

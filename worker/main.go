@@ -1,16 +1,19 @@
-package master
+package main
 
 import (
-	"fmt"
+	"log"
+	"os/exec"
 	"time"
 )
 
 func main() {
-	fmt.Println("Hello World!!")
-	n := 0
+	log.Println("Start Logging Load Average")
 	for {
-		fmt.Println(n)
+		output, err := exec.Command("uptime").Output()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(string(output))
 		time.Sleep(1 * time.Second)
-		n++
 	}
 }
