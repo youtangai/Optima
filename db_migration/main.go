@@ -7,5 +7,11 @@ import (
 
 func main() {
 	db := db.GetDataBase()
-	db.CreateTable(&model.Host{})
+	if db.HasTable(&model.LoadIndicator{}) {
+		db.DropTable(&model.LoadIndicator{})
+	}
+	if db.HasTable(&model.Host{}) {
+		db.DropTable(&model.Host{})
+	}
+	db.AutoMigrate(&model.Host{}, &model.LoadIndicator{})
 }
