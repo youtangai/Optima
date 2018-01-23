@@ -3,7 +3,7 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Configuration struct {
-	Port string `envconfig:"PORT" default:"62070"`
+	Port string `envconfig:"PORT" default:"62071"`
 }
 
 var (
