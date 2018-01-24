@@ -14,7 +14,11 @@ services:
     build: ./conductor
     ports: 
       - 62070:62070
+    links:
+      - db
   worker:
     build: ./worker
     ports:
       - 62071:62071
+    links:
+      - conductor
