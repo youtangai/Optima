@@ -1,14 +1,24 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/youtangai/Optima/conductor/model"
+	"github.com/youtangai/Optima/worker/config"
+)
+
+var (
+	conductorURL = "http://" + config.ConductorHost() + ":" + config.ConductorPort()
 )
 
 func main() {
@@ -57,4 +67,19 @@ func getNetIP() string { //IPを取得
 
 	addr := strings.Split(addrs[1].String(), "/")[0] //2つ目のインタフェースを取得して， /で分割して，ipだけ取得
 	return addr
+}
+
+func sendLoadIndicator(hostname string, addr string, load float64) {
+	reqBody := new(model.LoadIndicatorJson)
+	reqBody.HostIP = addr
+	reqBody.HostName = hostname
+	reqBody.LoadIndicator = load
+	json, err := json.Marshal(reqBody)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = http.Post(conductorURL+"/load_indicator", "application/json", bytes.NewBuffer(json))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
