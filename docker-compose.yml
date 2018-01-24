@@ -14,3 +14,7 @@ services:
     build: ./conductor
     ports: 
       - 62070:62070
+  worker:
+    build: ./worker
+    ports:
+      - 62071:62071
