@@ -41,7 +41,9 @@ func main() {
 		log.Printf("Load Average / CPU num =%f\n", loadIndicator)
 		log.Printf("Host name = %s\n", hostname)
 
-		time.Sleep(1 * time.Second)
+		sendLoadIndicator(hostname, addr, loadIndicator)
+
+		time.Sleep(1 * time.Minute)
 	}
 }
 
