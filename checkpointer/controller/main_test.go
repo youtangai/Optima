@@ -2,8 +2,10 @@ package controller
 
 import "testing"
 
+const ID = "9277231bbe1634591433a66b4c907b32899a3b658641326494b83309bd784f2b"
+
 func TestCheckpoint(t *testing.T) {
-	containerID := "0825008df297"
+	containerID := ID
 	result, err := checkpoint(containerID)
 	if err != nil {
 		t.Fatalf("failed with err = %v", err)
@@ -13,7 +15,7 @@ func TestCheckpoint(t *testing.T) {
 
 func TestScpCheckpointDir(t *testing.T) {
 	targetIP := "192.168.64.12"
-	sourceDir := "/tmp/0825008df2970c7cd25c5a7dafca2b0bfe8dabbc5a80ba0cb299ceea1083de79/chk"
+	sourceDir := "/var/lib/docker/containers/" + ID + "/checkpoints/chk"
 	err := scpCheckpointDir(targetIP, sourceDir)
 	if err != nil {
 		t.Fatalf("failed with err = %v", err)
