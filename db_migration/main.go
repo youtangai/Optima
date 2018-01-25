@@ -32,5 +32,5 @@ func readContainer() {
 	db := db.GetDataBase()
 	container := new(model.Container)
 	db.First(container)
-	log.Printf("container status\n%v", container)
+	log.Printf("container status\n%+v", container)
 }

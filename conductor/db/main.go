@@ -28,7 +28,7 @@ func connection() *gorm.DB {
 	host := config.DBHost()
 	port := config.DBPort()
 	dbName := config.DBName()
-	connectionString := user + ":" + pass + "@" + "tcp(" + host + ":" + port + ")/" + dbName
+	connectionString := user + ":" + pass + "@" + "tcp(" + host + ":" + port + ")/" + dbName + "?parseTime=true"
 	db, err := gorm.Open(DBMS, connectionString)
 	if err != nil {
 		log.Fatal(err)
