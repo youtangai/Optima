@@ -18,6 +18,10 @@ import (
 	"github.com/youtangai/Optima/monitor/config"
 )
 
+const (
+	CONDUCTOR_PORT = "62070"
+)
+
 func main() {
 	conductorHost := flag.String("conductor_ip", "192.168.64.12", "conductor's IP")
 	flag.Parse()
@@ -73,7 +77,7 @@ func getNetIP() string { //IPを取得
 }
 
 func sendLoadIndicator(hostname string, addr string, load float64) {
-	conductorURL := "http://" + config.GetConductorHost() + ":62070"
+	conductorURL := "http://" + config.GetConductorHost() + ":" + CONDUCTOR_PORT
 	reqBody := new(model.LoadIndicatorJson)
 	reqBody.HostIP = addr
 	reqBody.HostName = hostname
