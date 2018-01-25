@@ -14,9 +14,8 @@ func TestCheckpoint(t *testing.T) {
 }
 
 func TestScpCheckpointDir(t *testing.T) {
-	targetIP := "192.168.64.12"
 	sourceDir := "/var/lib/docker/containers/" + ID + "/checkpoints/chk"
-	err := scpCheckpointDir(targetIP, sourceDir)
+	err := scpCheckpointDir(sourceDir)
 	if err != nil {
 		t.Fatalf("failed with err = %v", err)
 	}
