@@ -47,7 +47,7 @@ func restore(restoreTargetContainerID, restoreSourceContainerID string) error {
 	log.Printf("targetContainerId = %s\n", restoreTargetContainerID)
 
 	//レストアコマンドを作成
-	cmdstr := "docker start --checkpoint=" + restoreSourceContainerID + " --checkpoint-dir=/var/optima " + restoreTargetContainerID
+	cmdstr := "docker start --checkpoint=" + restoreSourceContainerID + " --checkpoint-dir=/var/optima/ " + restoreTargetContainerID
 	log.Printf("cmd = %s", cmdstr)
 
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
@@ -64,6 +64,7 @@ func scpRestoreDir(restoreDir string) (string, error) {
 	keyPath := config.GetSecretKeyPath()
 	contollerIP := config.GetControllerIP()
 
+	//レストアフォルダのダウンロード
 	cmdstr := "scp -o StrictHostKeyChecking=no -i " + keyPath + " -r root@" + contollerIP + ":" + restoreDir + " /var/optima/"
 	output, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
