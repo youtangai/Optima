@@ -17,7 +17,7 @@ services:
     links:
       - db
   monitor:
-    build: ./worker
+    build: ./monitor
     ports:
       - 62071:62071
     links:
