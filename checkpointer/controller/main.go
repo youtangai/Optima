@@ -3,9 +3,11 @@ package controller
 import (
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 
 	"github.com/gin-gonic/gin"
+	"github.com/youtangai/Optima/checkpointer/config"
 	"github.com/youtangai/Optima/checkpointer/model"
 )
 
@@ -14,7 +16,6 @@ func CehckpointContainerController(c *gin.Context) {
 	json := new(model.CheckpointContainerInfoJSON)
 	c.ShouldBindJSON(json)
 	containerID := json.ContainerID
-	targetIP := json.TargetIP
 
 	sourceDirPath, err := checkpoint(containerID)
 	if err != nil {
@@ -25,7 +26,7 @@ func CehckpointContainerController(c *gin.Context) {
 		return
 	}
 
-	err = scpCheckpointDir(targetIP, sourceDirPath)
+	err = scpCheckpointDir(sourceDirPath)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -59,6 +60,7 @@ func checkpoint(containerID string) (string, error) {
 	// 	log.Fatal(err)
 	// 	return "", err
 	// }
+
 	cmdstr := "docker checkpoint create " + containerID + " " + chkID
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
@@ -70,8 +72,15 @@ func checkpoint(containerID string) (string, error) {
 }
 
 //sourceDirをtargetIPに送信する関数
-func scpCheckpointDir(targetIP, sourceDir string) error {
-	log.Printf("targetIP= %s\n", targetIP)
+func scpCheckpointDir(sourceDir string) error {
+	keyPath := config.GetSecretKeyPath()
+	contollerIP := config.GetControllerIP()
+	hostName, err := os.Hostname()
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmdstr := "scp -i " + keyPath + " -r " + sourceDir + " root@" + contollerIP + ":/var/optima/" + hostName + "/"
+	log.Printf("cmd = %s", cmdstr)
 	log.Printf("sourceDir= %s\n", sourceDir)
 	return nil
 }
