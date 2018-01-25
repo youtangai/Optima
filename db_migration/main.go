@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	log.Println("db check start")
 	db := db.GetDataBase()
 	db.LogMode(true)
 	if db.HasTable(&model.LoadIndicator{}) {
