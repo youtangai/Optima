@@ -4,10 +4,10 @@ import "github.com/kelseyhightower/envconfig"
 
 type Configuration struct {
 	DBUser   string `envconfig:"OPTIMA_DB_USER" default:"zun"`
-	DBHost   string `envconfig:"PTIMA_DB_HOST" default:"localhost"`
-	DBPort   string `envconfig:"PTIMA_DB_PORT" default:"3306"`
-	DBName   string `envconfig:"PTIMA_DB_NAME" default:"zun"`
-	DBPasswd string `envconfig:"PTIMA_DB_PASSWD" default:"199507620"`
+	DBHost   string `envconfig:"OPTIMA_DB_HOST" default:"localhost"`
+	DBPort   string `envconfig:"OPTIMA_DB_PORT" default:"3306"`
+	DBName   string `envconfig:"OPTIMA_DB_NAME" default:"zun"`
+	DBPasswd string `envconfig:"OPTIMA_DB_PASSWD" default:"199507620"`
 }
 
 var (
