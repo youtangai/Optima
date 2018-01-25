@@ -17,6 +17,6 @@ func main() {
 			"message": "pong",
 		})
 	})
-	router.POST("/checkpoint", controller.CehckpointContainer)
+	router.POST("/checkpoint", controller.CehckpointContainerController)
 	router.Run(":" + PORT)
 }
