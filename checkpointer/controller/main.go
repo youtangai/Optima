@@ -17,7 +17,7 @@ func CehckpointContainerController(c *gin.Context) {
 	c.ShouldBindJSON(json)
 	containerID := json.ContainerID
 
-	sourceDirPath, err := checkpoint(containerID)
+	err := checkpoint(containerID)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -26,7 +26,7 @@ func CehckpointContainerController(c *gin.Context) {
 		return
 	}
 
-	err = scpCheckpointDir(sourceDirPath)
+	chkDir, err := scpCheckpointDir(containerID)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -35,17 +35,15 @@ func CehckpointContainerController(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "checkpoint & scp done",
+		"chk_dir_path": chkDir,
 	})
 	return
 }
 
 //コンテナをチェックポイントする関数
-func checkpoint(containerID string) (string, error) {
-	chkID := "chk" //checkpoint dir name
+func checkpoint(containerID string) error {
 
 	log.Printf("containerid = %s\n", containerID)
-	chkDirPath := "/var/lib/docker/containers/" + containerID + "/checkpoints/" + chkID
 
 	// ctx := context.Background()
 	// cli, err := client.NewEnvClient()
@@ -61,26 +59,30 @@ func checkpoint(containerID string) (string, error) {
 	// 	return "", err
 	// }
 
-	cmdstr := "docker checkpoint create " + containerID + " " + chkID
+	cmdstr := "docker checkpoint create " + containerID + " " + containerID
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
-		return "", err
+		return err
 	}
 
-	return chkDirPath, nil
+	return nil
 }
 
 //sourceDirをtargetIPに送信する関数
-func scpCheckpointDir(sourceDir string) error {
+func scpCheckpointDir(containerID string) (string, error) {
+	sourceDir := "/var/lib/docker/containers/" + containerID + "/checkpoints/" + containerID
 	keyPath := config.GetSecretKeyPath()
 	contollerIP := config.GetControllerIP()
 	hostName, err := os.Hostname()
 	if err != nil {
 		log.Fatal(err)
 	}
-	cmdstr := "scp -i " + keyPath + " -r " + sourceDir + " root@" + contollerIP + ":/var/optima/" + hostName + "/"
+	cmdstr := "scp -o StrictHostKeyChecking=no -i " + keyPath + " -r " + sourceDir + " root@" + contollerIP + ":/var/optima/" + hostName + "/"
+	output, err := exec.Command("sh", "-c", cmdstr).Output()
 	log.Printf("cmd = %s", cmdstr)
 	log.Printf("sourceDir= %s\n", sourceDir)
-	return nil
+	log.Printf("output = %s", output)
+	chkDir := "/var/optima/" + hostName + "/" + containerID
+	return chkDir, nil
 }
