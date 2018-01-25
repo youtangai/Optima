@@ -19,6 +19,7 @@ const (
 
 func init() {
 	DataBase = connection()
+	DataBase.SingularTable(true)
 }
 
 func connection() *gorm.DB {
