@@ -60,7 +60,7 @@ func checkpoint(containerID string) (string, error) {
 	// 	return "", err
 	// }
 	cmdstr := "docker checkpoint create " + containerID + " " + chkID
-	_, err := exec.Command(cmdstr).Output()
+	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return "", err
