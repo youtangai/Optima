@@ -13,19 +13,22 @@ var (
 	DataBase *gorm.DB
 )
 
+const (
+	DBMS = "mysql"
+)
+
 func init() {
 	DataBase = connection()
 }
 
 func connection() *gorm.DB {
-	dbms := config.DBMS()
 	user := config.DBUser()
 	pass := config.DBPasswd()
 	host := config.DBHost()
 	port := config.DBPort()
 	dbName := config.DBName()
-	connect := user + ":" + pass + "@" + "tcp(" + host + ":" + port + ")/" + dbName
-	db, err := gorm.Open(dbms, connect)
+	connectionString := user + ":" + pass + "@" + "tcp(" + host + ":" + port + ")/" + dbName
+	db, err := gorm.Open(DBMS, connectionString)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,19 +1,23 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/youtangai/Optima/conductor/config"
 	"github.com/youtangai/Optima/conductor/controller"
 )
 
+const (
+	GIN_PORT = "62070"
+)
+
 func main() {
-	port := config.GinPort()
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
 	router.POST("/load_indicator", controller.RegistLoadIndicator)
-	router.Run(":" + port)
+	router.Run(":" + GIN_PORT)
 }
