@@ -3,11 +3,8 @@ package controller
 import (
 	"log"
 	"net/http"
+	"os/exec"
 
-	"golang.org/x/net/context"
-
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/checkpointer/model"
 )
@@ -49,15 +46,21 @@ func checkpoint(containerID string) (string, error) {
 	log.Printf("containerid = %s\n", containerID)
 	chkDirPath := "/var/lib/docker/containers/" + containerID + "/checkpoints/" + chkID
 
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		log.Fatal(err)
-		return "", err
-	}
+	// ctx := context.Background()
+	// cli, err := client.NewEnvClient()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return "", err
+	// }
 
-	//chkID という名前で checkpoint作成
-	err = cli.CheckpointCreate(ctx, containerID, types.CheckpointCreateOptions{CheckpointID: chkID})
+	// //chkID という名前で checkpoint作成
+	// err = cli.CheckpointCreate(ctx, containerID, types.CheckpointCreateOptions{CheckpointID: chkID})
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return "", err
+	// }
+	cmdstr := "docker checkpoint create " + containerID + " " + chkID
+	_, err := exec.Command(cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return "", err
