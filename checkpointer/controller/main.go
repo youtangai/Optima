@@ -80,6 +80,10 @@ func scpCheckpointDir(containerID string) (string, error) {
 	}
 	cmdstr := "scp -o StrictHostKeyChecking=no -i " + keyPath + " -r " + sourceDir + " root@" + contollerIP + ":/var/optima/" + hostName + "/"
 	output, err := exec.Command("sh", "-c", cmdstr).Output()
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
 	log.Printf("cmd = %s", cmdstr)
 	log.Printf("sourceDir= %s\n", sourceDir)
 	log.Printf("output = %s", output)
