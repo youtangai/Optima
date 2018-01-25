@@ -6,7 +6,7 @@ import (
 	"github.com/youtangai/Optima/restorer/config"
 )
 
-const ID = "9277231bbe1634591433a66b4c907b32899a3b658641326494b83309bd784f2b"
+const ID = "e950dfd850befa39f089ce09e91cbf51afad06e126ca0c2dc3c239c952616947"
 
 func TestRestore(t *testing.T) {
 	containerID := ID
