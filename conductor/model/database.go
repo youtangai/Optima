@@ -49,3 +49,10 @@ type Container struct {
 	SecurityGroups  string    `gorm:"column:security_groups;type:text"`
 	AutoRemove      bool      `gorm:"column:auto_remove"`
 }
+
+type Checkpoint struct {
+	ID             int    `gorm:"primary_key;AUTO_INCREMENT"`
+	ContainerImage string `gorm:"not null"`
+	CheckDir       string `gorm:"not null"`
+	IsRestored     bool   `gorm:"not null"`
+}
