@@ -10,6 +10,7 @@ import (
 func main() {
 	log.Println("db check start")
 	db := db.GetDataBase()
+	db.SingularTable(true)
 	db.LogMode(true)
 	if db.HasTable(&model.LoadIndicator{}) {
 		log.Println("load indicator is exist")
@@ -17,9 +18,8 @@ func main() {
 	if db.HasTable(&model.Host{}) {
 		log.Println("hosts is exist")
 	}
-	//db.AutoMigrate(&model.Host{}, &model.LoadIndicator{})
+	db.AutoMigrate(&model.Host{}, &model.LoadIndicator{})
 
-	db.SingularTable(true)
 	if db.HasTable(&model.Container{}) {
 		log.Println("find container table")
 	} else {
