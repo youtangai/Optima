@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/youtangai/Optima/checkpointer/controller"
 )
 
 const (
@@ -16,5 +17,6 @@ func main() {
 			"message": "pong",
 		})
 	})
+	router.POST("/checkpoint", controller.CehckpointContainer)
 	router.Run(":" + PORT)
 }
