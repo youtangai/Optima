@@ -15,13 +15,13 @@ const (
 
 func main() {
 	//コマンドライン引数を取得
-	secretKeyPath = *flag.String("i", "/var/optima/optima_key", "indentity file path for scp for controller node")
-	controllerIP = *flag.String("ip", "192.168.64.12", "controller node's ip")
+	secretKeyPath := flag.String("i", "/var/optima/optima_key", "indentity file path for scp for controller node")
+	controllerIP := flag.String("ip", "192.168.64.12", "controller node's ip")
 	flag.Parse()
 
 	//秘密鍵のパスを設定
-	config.SetSecretKeyPath(secretKeyPath)
-	config.SetControllerIP(controllerIP)
+	config.SetSecretKeyPath(*secretKeyPath)
+	config.SetControllerIP(*controllerIP)
 
 	router := gin.Default()
 	router.GET("/ping", func(c *gin.Context) {

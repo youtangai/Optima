@@ -21,7 +21,7 @@ func SetSecretKeyPath(path string) {
 
 //GetControllerIP is getter for コントローラのIP
 func GetControllerIP() string {
-	return config.SecretKeyPath
+	return config.ControllerIP
 }
 
 //SetControllerIP is setter for コントローラのIP
