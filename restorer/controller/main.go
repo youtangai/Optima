@@ -56,6 +56,14 @@ func restore(restoreTargetContainerID, restoreSourceContainerID string) error {
 		return err
 	}
 
+	cmdstr = "rm -rf /var/optima/" + restoreSourceContainerID
+	log.Printf("cmd = %s", cmdstr)
+	_, err = exec.Command("sh", "-c", cmdstr).Output()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
 	return nil
 }
 
