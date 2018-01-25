@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"log"
 	"net"
 	"net/http"
@@ -14,14 +15,14 @@ import (
 	"time"
 
 	"github.com/youtangai/Optima/conductor/model"
-	"github.com/youtangai/Optima/worker/config"
-)
-
-var (
-	conductorURL = "http://" + config.ConductorHost() + ":" + config.ConductorPort()
+	"github.com/youtangai/Optima/monitor/config"
 )
 
 func main() {
+	conductorHost := flag.String("conductor_ip", "192.168.64.12", "conductor's IP")
+	flag.Parse()
+	config.SetConductorHost(*conductorHost)
+
 	log.Println("Start Logging Load Average")
 	cpuNum := runtime.NumCPU()     //cpuの数を取得
 	hostname, err := os.Hostname() //ホストネームを取得
@@ -72,6 +73,7 @@ func getNetIP() string { //IPを取得
 }
 
 func sendLoadIndicator(hostname string, addr string, load float64) {
+	conductorURL := "http://" + config.GetConductorHost() + ":62070"
 	reqBody := new(model.LoadIndicatorJson)
 	reqBody.HostIP = addr
 	reqBody.HostName = hostname
