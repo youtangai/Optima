@@ -4,7 +4,7 @@ services:
     image: mariadb:10.1
     environment:
       - MYSQL_ROOT_PASSWORD=199507620
-      - MYSQL_DATABASE=zun-optima
+      - MYSQL_DATABASE=zun
       - MYSQL_USER=zun
       - MYSQL_PASSWORD=199507620
     ports:

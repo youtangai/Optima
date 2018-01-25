@@ -1,1 +1,1 @@
-SELECT * FROM load_indicators LIMIT 1000;
+SELECT * FROM zun.load_indicators LIMIT 1000;

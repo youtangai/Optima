@@ -1,1 +1,1 @@
-SELECT * FROM hosts LIMIT 1000;
+SELECT * FROM zun.hosts;
