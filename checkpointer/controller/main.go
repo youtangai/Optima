@@ -44,6 +44,9 @@ func CehckpointContainerController(c *gin.Context) {
 
 //コンテナをチェックポイントする関数
 func checkpoint(containerID string) (string, error) {
+	log.Printf("containerid = %s\n", containerID)
+	chkDirPath := "/tmp/" + containerID + "/checkpoints/chk"
+
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -51,18 +54,12 @@ func checkpoint(containerID string) (string, error) {
 		return "", err
 	}
 
-	containers, err := cli.ContainerList(ctx, types.ContainerListOptions{})
+	err = cli.CheckpointCreate(ctx, containerID, types.CheckpointCreateOptions{CheckpointDir: "/tmp", CheckpointID: "chk"})
 	if err != nil {
 		log.Fatal(err)
 		return "", err
 	}
 
-	for _, container := range containers {
-		log.Println(container.ID)
-	}
-
-	log.Printf("containerid = %s\n", containerID)
-	chkDirPath := "/tmp/oiah3th4ihaoihgoiehoac/checkpoints/chk1"
 	return chkDirPath, nil
 }
 
