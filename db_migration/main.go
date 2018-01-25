@@ -24,5 +24,6 @@ func main() {
 		log.Println("find container table")
 	} else {
 		log.Println("could not find container table")
+		db.AutoMigrate(&model.Container{})
 	}
 }
