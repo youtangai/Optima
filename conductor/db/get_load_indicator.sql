@@ -1,1 +1,0 @@
-SELECT * FROM zun.load_indicators LIMIT 1000;
