@@ -20,8 +20,9 @@ import (
 const (
 	AUTH_PATH       = "/auth/tokens?nocatalog"
 	ZUN_HOST        = "192.168.64.12:9517"
-	ZUN_CREATE_PAHT = "/v1/containers/"
-	ZUN_DELETE_PATH = "/v1/containers/"
+	ZUN_PATH        = "/v1/containers/"
+	CHECKPOINT_PORT = "62072"
+	RESTORE_PORT    = "62073"
 )
 
 //LeaveController is 脱退処理のコントローラ
@@ -118,7 +119,7 @@ func createContainer(imageName string) (string, error) {
 
 	req, err := http.NewRequest(
 		"POST",
-		ZUN_HOST+ZUN_CREATE_PAHT,
+		ZUN_HOST+ZUN_PATH,
 		bytes.NewBuffer([]byte(jsonStr)),
 	)
 	if err != nil {
@@ -155,8 +156,41 @@ func checkpointContainer(containerID, hostName string) (string, error) {
 	return "/var/optima/hostname/containerid", nil
 }
 
+//コンテナ削除
 func deleteContainer(uuid string) error {
 	//delete container
+	token, err := authKeyStone()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"DELETE",
+		ZUN_HOST+ZUN_PATH+uuid,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	//token 設定
+	req.Header.Set("X-Subject-Token", token)
+
+	//クエリパラム設定
+	query := req.URL.Query()
+	query.Add("force", "True")
+	req.URL.RawQuery = query.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer resp.Body.Close()
+	requestID := resp.Header.Get("X-Openstack-Request-Id")
+	log.Println("delete container request id = " + requestID)
 	return nil
 }
 
