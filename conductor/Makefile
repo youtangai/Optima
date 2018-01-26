@@ -1,23 +1,8 @@
-IMAGE_NAME=optima_conductor
+conductor: main.go
+	GOOS=linux GOARCH=amd64 go build -o conductor main.go
 
-main: main.go
-	GOOS=linux GOARCH=amd64 go build main.go
+clean:conductor
+	rm -f conductor
 
-clean:
-	rm -f main
-
-test:
-	go run main.go
-
-build: main
-	docker build -t $(IMAGE_NAME):latest .
-
-run:
-	docker run -d --name $(IMAGE_NAME) $(IMAGE_NAME)
-
-down:
-	docker stop $(IMAGE_NAME)
-	docker rm $(IMAGE_NAME)
-
-logs:
-	docker logs -f $(IMAGE_NAME)
+send:conductor
+	scp conductor root@192.168.64.12:/opt

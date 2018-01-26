@@ -1,23 +1,9 @@
-IMAGENAME := optima_worker
+monitor: main.go
+	GOOS=linux GOARCH=amd64 go build -o monitor main.go
 
-main: main.go
-	GOOS=linux GOARCH=amd64 go build main.go
+clean: monitor
+	rm -f monitor
 
-clean:
-	rm -f main
-
-test:
-	go run main.go
-
-build: main
-	docker build -t $(IMAGENAME):latest .
-
-run: 
-	docker run -d --name $(IMAGENAME) $(IMAGENAME)
-
-down:
-	docker stop $(IMAGENAME)
-	docker rm $(IMAGENAME)
-
-logs:
-	docker logs -f $(IMAGENAME)
+send: monitor join_script.sh
+	scp monitor root@192.168.64.14:/opt
+	scp join_script.sh root@192.168.64.14:/opt
