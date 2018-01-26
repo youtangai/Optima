@@ -129,9 +129,99 @@ func initialJoin(hostName string) error {
 
 //LeaveController is 脱退処理のコントローラ
 func LeaveController(c *gin.Context) {
+	json := new(model.LeaveJson)
+	c.ShouldBindJSON(json)
+	hostName := json.HostName
 	//受け取ったホスト名のコンテナを調べる
+	containers, err := db.GetContainersByHostName(hostName)
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 	//コンテナの数が0なら終わり
+	if len(*containers) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "leave_succeed"})
+		return
+	}
 	//コンテナを１つ選択
-	//同イメージでコンテナ作成を依頼 このとき uuidを取得
+	for _, container := range *containers {
+		//同イメージでコンテナ作成を依頼 このとき uuidを取得
+		uuid, err := createContainer(container.Image)
+		if err != nil {
+			//チェックポイントする
+			chkdirpath, err := checkpointContainer(container.ContainerID, container.Host)
+			if err != nil {
+				log.Fatal(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+			//chkdirpathをDBへ登録
+			db.RegistCheckPointDir(chkdirpath, container.Image)
+			//コンテナを削除する
+			err = deleteContainer(container.UUID)
+			if err != nil {
+				log.Fatal(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+			//load_indicator削除
+			err = db.DeleteLoadIndicator(hostName)
+			if err != nil {
+				log.Fatal(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"message": "all containers were checkpointed & some container restored"})
+			return
+		}
+		//レストアするコンテナを取得
+		targetContainer, err := db.GetContainerByUUID(uuid)
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		//チェックポイントする
+		chkdirpath, err := checkpointContainer(container.ContainerID, container.Host)
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+		//レストアする
+		err = restoreContainer(targetContainer.ContainerID, chkdirpath, targetContainer.Host)
+		if err != nil {
+			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+	}
+	//load_indicator削除
+	err = db.DeleteLoadIndicator(hostName)
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "all containers were restored"})
+	return
+}
 
+func createContainer(imageName string) (string, error) {
+	//openstackにコンテナ作成を依頼
+	return "uuid", nil
+}
+
+func checkpointContainer(containerID, hostName string) (string, error) {
+	return "/var/optima/hostname/containerid", nil
+}
+
+func deleteContainer(uuid string) error {
+	//delete container
+	return nil
+}
+
+func restoreContainer(containerID, restoreDir, hostName string) error {
+	return nil
 }

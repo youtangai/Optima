@@ -82,9 +82,47 @@ func GetIPAddrByHostName(hostname string) (string, error) {
 //GetContainersByHostName is ホスト名からコンテナの一覧を取得する関数
 func GetContainersByHostName(hostname string) (*[]model.Container, error) {
 	containers := new([]model.Container)
-	err := DataBase.Where(&model.Container{HostName: hostname}).Find(containers).Error
+	err := DataBase.Where(&model.Container{Host: hostname}).Find(containers).Error
 	if err != nil {
 		return containers, err
 	}
 	return containers, nil
+}
+
+//GetContainerByUUID is uuidからコンテナを１つ取得する
+func GetContainerByUUID(uuid string) (*model.Container, error) {
+	container := new(model.Container)
+	err := DataBase.Where(&model.Container{UUID: uuid}).First(container).Error
+	if err != nil {
+		return container, err
+	}
+	return container, nil
+}
+
+//RegistCheckPointDir is チェックポイントパスを登録する関数
+func RegistCheckPointDir(chkDirPath, imageName string) error {
+	checkpoint := new(model.Checkpoint)
+	checkpoint.CheckDir = chkDirPath
+	checkpoint.ContainerImage = imageName
+	checkpoint.IsRestored = false
+	err := DataBase.Create(checkpoint).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteLoadIndicator(hostName string) error {
+	loadIndicator := new(model.LoadIndicator)
+	err := DataBase.Where(&model.LoadIndicator{HostName: hostName}).First(loadIndicator).Error
+	if err != nil {
+		return err
+	}
+
+	err = DataBase.Delete(&loadIndicator).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
