@@ -90,6 +90,7 @@ func initialJoin(hostName string) error {
 		log.Fatal(err)
 		return err
 	}
+	log.Println("cd /etc")
 
 	//ipaddrを取得
 	ipAddr, err := db.GetIPAddrByHostName(hostName)
@@ -97,17 +98,19 @@ func initialJoin(hostName string) error {
 		log.Fatal(err)
 		return err
 	}
+	log.Printf("ip addr = %s", ipAddr)
 
 	//入力したい文字列を生成
 	inputString := ipAddr + " " + hostName + "\n"
-	file, err := os.Open("hosts") //ファイルを開く
+	log.Printf("inputString = %s", inputString)
+	file, err := os.OpenFile("hosts", os.O_WRONLY|os.O_APPEND, 0666) //ファイルを開く
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 	defer file.Close()
 
-	//書込み
+	//書込みe
 	file.Write(([]byte)(inputString))
 	return nil
 }
