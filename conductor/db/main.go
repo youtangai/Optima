@@ -78,3 +78,13 @@ func GetIPAddrByHostName(hostname string) (string, error) {
 	IPAddr := hostEntity.HostIP
 	return IPAddr, nil
 }
+
+//GetContainersByHostName is ホスト名からコンテナの一覧を取得する関数
+func GetContainersByHostName(hostname string) (*[]model.Container, error) {
+	containers := new([]model.Container)
+	err := DataBase.Where(&model.Container{HostName: hostname}).Find(containers).Error
+	if err != nil {
+		return containers, err
+	}
+	return containers, nil
+}
