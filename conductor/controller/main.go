@@ -141,23 +141,24 @@ func LeaveController(c *gin.Context) {
 	}
 	//コンテナの数が0なら終わり
 	if len(*containers) == 0 {
-		c.JSON(http.StatusOK, gin.H{"message": "leave_succeed"})
+		c.JSON(http.StatusOK, gin.H{"message": "no container need checkpoint&restore"})
 		return
 	}
 	//コンテナを１つ選択
 	for _, container := range *containers {
 		//同イメージでコンテナ作成を依頼 このとき uuidを取得
 		uuid, err := createContainer(container.Image)
-		if err != nil {
+		if err != nil { //コンテナの作成ができなかったら
+			log.Println("leave:cannot create container")
 			//チェックポイントする
-			chkdirpath, err := checkpointContainer(container.ContainerID, container.Host)
+			chkDirPath, err := checkpointContainer(container.ContainerID, container.Host)
 			if err != nil {
 				log.Fatal(err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 				return
 			}
 			//chkdirpathをDBへ登録
-			db.RegistCheckPointDir(chkdirpath, container.Image)
+			db.RegistCheckPointDir(chkDirPath, container.Image)
 			//コンテナを削除する
 			err = deleteContainer(container.UUID)
 			if err != nil {
@@ -165,16 +166,9 @@ func LeaveController(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 				return
 			}
-			//load_indicator削除
-			err = db.DeleteLoadIndicator(hostName)
-			if err != nil {
-				log.Fatal(err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"message": "all containers were checkpointed & some container restored"})
-			return
+			log.Println("leave:checkpoint container " + container.ContainerID)
 		}
+		log.Println("leave:created restore container")
 		//レストアするコンテナを取得
 		targetContainer, err := db.GetContainerByUUID(uuid)
 		if err != nil {
@@ -196,15 +190,18 @@ func LeaveController(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
+		log.Println("leave:restored container " + container.ContainerID)
 	}
 	//load_indicator削除
+	log.Println("leave:delete load_indicator")
 	err = db.DeleteLoadIndicator(hostName)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "all containers were restored"})
+	log.Println("leave:delete load_indicator done")
+	c.JSON(http.StatusOK, gin.H{"message": "leave_suceed"})
 	return
 }
 
