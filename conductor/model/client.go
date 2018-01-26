@@ -9,3 +9,7 @@ type LoadIndicatorJson struct {
 type JoinJson struct {
 	HostName string `json:"host_name" binding:"required"`
 }
+
+type LeaveJson struct {
+	HostName string `json:"host_name" binding:"required"`
+}

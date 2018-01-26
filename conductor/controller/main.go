@@ -123,3 +123,8 @@ func initialJoin(hostName string) error {
 	file.Write(([]byte)(inputString))
 	return nil
 }
+
+//LeaveController is 脱退処理のコントローラ
+func LeaveController(c *gin.Context) {
+
+}
