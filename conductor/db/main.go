@@ -112,6 +112,7 @@ func RegistCheckPointDir(chkDirPath, imageName string) error {
 	return nil
 }
 
+//DeleteLoadIndicator is 負荷指標を削除する関数
 func DeleteLoadIndicator(hostName string) error {
 	loadIndicator := new(model.LoadIndicator)
 	err := DataBase.Where(&model.LoadIndicator{HostName: hostName}).First(loadIndicator).Error
@@ -124,5 +125,24 @@ func DeleteLoadIndicator(hostName string) error {
 		return err
 	}
 
+	return nil
+}
+
+//GetCheckPointDirs is レストアされていないチェックポイントの一覧を取得する
+func GetCheckPointDirs() (*[]model.Checkpoint, error) {
+	checkpoints := new([]model.Checkpoint)
+	err := DataBase.Where(&model.Checkpoint{IsRestored: false}).Find(checkpoints).Error
+	if err != nil {
+		return checkpoints, err
+	}
+	return checkpoints, err
+}
+
+//DeleteCheckPointDir is チェックポイントレコードを削除する
+func DeleteCheckPointDir(dir model.Checkpoint) error {
+	err := DataBase.Delete(dir).Error
+	if err != nil {
+		return err
+	}
 	return nil
 }
