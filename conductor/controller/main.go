@@ -72,6 +72,9 @@ func JoinController(c *gin.Context) {
 	}
 	//公開鍵が存在しなかったら 再配置処理へ
 	log.Println("pub key not found")
+	//TODO再配置処理の実装
+	//zun.checkpointテーブルの確認 及びレストア試行
+	//高負荷サーバチェック 及びレストア試行
 }
 
 //一番最初の参加時の処理
@@ -126,5 +129,9 @@ func initialJoin(hostName string) error {
 
 //LeaveController is 脱退処理のコントローラ
 func LeaveController(c *gin.Context) {
+	//受け取ったホスト名のコンテナを調べる
+	//コンテナの数が0なら終わり
+	//コンテナを１つ選択
+	//同イメージでコンテナ作成を依頼 このとき uuidを取得
 
 }
