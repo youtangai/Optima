@@ -58,10 +58,20 @@ func JoinController(c *gin.Context) {
 		initialJoin(hostName)
 	}
 	//公開鍵が存在しなかったら 再配置処理へ
-	log.Println("pub key not found")
+	log.Println("relocation start")
 	//TODO再配置処理の実装
-	//zun.checkpointテーブルの確認 及びレストア試行
+	//zun.checkpointテーブルの確認
+	checkpoints, err := db.GetCheckPointDirs()
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	//チェックポイントが0でなければ
+	if len(*checkpoints) != 0 {
+		//チェックポイントのレストア試行
+	}
 	//高負荷サーバチェック 及びレストア試行
+
 }
 
 //一番最初の参加時の処理
