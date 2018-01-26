@@ -34,16 +34,21 @@ func CreateDirController(c *gin.Context) {
 	err := c.ShouldBindJSON(json)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	hostName := json.HostName
 	err = os.Chdir("/var")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	err = os.MkdirAll("optima/"+hostName, 0777)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{"dir_path": "/var/optima/" + hostName})
+	return
 }
 
 func JoinController(c *gin.Context) {
