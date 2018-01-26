@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"bytes"
 
@@ -13,7 +16,10 @@ import (
 )
 
 const (
-	AUTH_PATH = "/auth/tokens?nocatalog"
+	AUTH_PATH       = "/auth/tokens?nocatalog"
+	ZUN_HOST        = "192.168.64.12:9517"
+	ZUN_CREATE_PAHT = "/v1/containers/"
+	ZUN_DELETE_PATH = "/v1/containers/"
 )
 
 //LeaveController is 脱退処理のコントローラ
@@ -113,7 +119,7 @@ func restoreContainer(containerID, restoreDir, hostName string) error {
 }
 
 func authKeyStone() (string, error) {
-	jsonStr := createAuthJsonStr()
+	jsonStr := createAuthJSONStr()
 	authURL := os.Getenv("OS_AUTH_URL")
 
 	req, err := http.NewRequest(
@@ -139,7 +145,7 @@ func authKeyStone() (string, error) {
 	return token, nil
 }
 
-func createAuthJsonStr() string {
+func createAuthJSONStr() string {
 	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
 	userName := os.Getenv("OS_USERNAME")
 	password := os.Getenv("OS_PASSWORD")
@@ -171,7 +177,12 @@ func createAuthJsonStr() string {
             } 
         } 
     }
-}
-`
+}`
 	return jsonStr
+}
+
+func randomString() string {
+	var n uint64
+	binary.Read(rand.Reader, binary.LittleEndian, &n)
+	return strconv.FormatUint(n, 36)
 }
