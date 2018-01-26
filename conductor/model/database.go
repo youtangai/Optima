@@ -2,16 +2,10 @@ package model
 
 import "time"
 
-type Host struct {
-	ID       int    `sql:AUTO_INCREMENT`
-	HostName string `gorm:"not null"`
-	HostIP   string `gorm:"not null"`
-}
-
 type LoadIndicator struct {
-	ID            int `sql:AUTO_INCREMENT`
-	HostID        int
-	Host          Host `gorm:"ForeignKey:HostID;AssociationForeignKey:ID"`
+	ID            int    `gorm:"primary_key;AUTO_INCREMENT"`
+	HostName      string `gorm:"not null"`
+	HostIP        string `gorm:"not null"`
 	LoadIndicator float64
 }
 
@@ -54,5 +48,5 @@ type Checkpoint struct {
 	ID             int    `gorm:"primary_key;AUTO_INCREMENT"`
 	ContainerImage string `gorm:"not null"`
 	CheckDir       string `gorm:"not null"`
-	IsRestored     bool   `gorm:"not null"`
+	IsRestored     bool   `gorm:"not null;default:false"`
 }

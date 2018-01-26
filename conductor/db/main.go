@@ -42,17 +42,26 @@ func GetDataBase() *gorm.DB {
 }
 
 func RegistLoadIndicator(json model.LoadIndicatorJson) error {
-	hostEntity := new(model.Host)
-	err := DataBase.FirstOrCreate(hostEntity, &model.Host{HostName: json.HostName, HostIP: json.HostIP}).Error
-	if err != nil {
-		return err
+	hostEntity := new(model.LoadIndicator)
+
+	if DataBase.Where(&model.LoadIndicator{HostName: json.HostName, HostIP: json.HostIP}).First(&hostEntity).RecordNotFound() {
+		//見つからなかった時
+		hostEntity.HostIP = json.HostIP
+		hostEntity.HostName = json.HostName
+		hostEntity.LoadIndicator = json.LoadIndicator
+		err := DataBase.Create(hostEntity).Error
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+		return nil
 	}
-	loadIndicatorEntity := new(model.LoadIndicator)
-	loadIndicatorEntity.HostID = hostEntity.ID
-	loadIndicatorEntity.Host = *hostEntity
-	loadIndicatorEntity.LoadIndicator = json.LoadIndicator
-	err = DataBase.Create(loadIndicatorEntity).Error
+
+	//見つかった時
+	hostEntity.LoadIndicator = json.LoadIndicator
+	err := DataBase.Save(hostEntity).Error
 	if err != nil {
+		log.Fatal(err)
 		return err
 	}
 	return nil
