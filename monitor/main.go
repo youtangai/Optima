@@ -53,7 +53,7 @@ func main() {
 }
 
 func getLoadAverage() float64 { //ロードアベレージを取得
-	cmdstr := "uptime | awk -F':' '$0 = $5' | awk '$0 = $2' | sed -e 's/,//g'" // load average取得して 9番目のフィールド取得して カンマを削除
+	cmdstr := "uptime | awk -F'g' '$0 = $2' | awk '$0 = $3' | sed -e 's/,//g'" // load average取得して 9番目のフィールド取得して カンマを削除
 	loadAverageByte, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
