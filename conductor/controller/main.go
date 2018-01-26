@@ -7,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/conductor/db"
 	"github.com/youtangai/Optima/conductor/model"
+	"github.com/youtangai/Optima/conductor/util"
+)
+
+const (
+	SecretKeyName = "optima_key.pub"
 )
 
 // RegistLoadIndicator is 負荷指標を登録するメソッド
@@ -41,12 +46,25 @@ func CreateDirController(c *gin.Context) {
 }
 
 func JoinController(c *gin.Context) {
-	//公開鍵が存在したら initialJoin
+
+	json := new(model.JoinJson)
+	err := c.ShouldBindJSON(json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	hostName := json.HostName
+	err = os.Chdir("/var/optima/" + hostName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	if bool := util.FileExists(SecretKeyName); bool {
+		//公開鍵が存在したら
+		initialJoin(hostName)
+	}
 	//公開鍵が存在しなかったら 再配置処理へ
 }
 
 func initialJoin(hostName string) error {
-	//公開鍵を受け取っているはず
 	// /root/.ssh/authorised_keyに追記
 	// 公開鍵の削除
 	// /etc/hostsにipとエイリアスを記述
