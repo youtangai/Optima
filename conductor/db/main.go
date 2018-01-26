@@ -41,6 +41,7 @@ func GetDataBase() *gorm.DB {
 	return DataBase
 }
 
+//RegistLoadIndicator is 負荷指標登録処理
 func RegistLoadIndicator(json model.LoadIndicatorJson) error {
 	hostEntity := new(model.LoadIndicator)
 
@@ -65,4 +66,15 @@ func RegistLoadIndicator(json model.LoadIndicatorJson) error {
 		return err
 	}
 	return nil
+}
+
+//GetIPAddrByHostName is ホスト名で検索しIPアドレスを返却する関数
+func GetIPAddrByHostName(hostname string) (string, error) {
+	hostEntity := new(model.LoadIndicator)
+	err := DataBase.Where(&model.LoadIndicator{HostName: hostname}).First(hostEntity).Error
+	if err != nil {
+		return "", err
+	}
+	IPAddr := hostEntity.HostIP
+	return IPAddr, nil
 }

@@ -74,7 +74,7 @@ func JoinController(c *gin.Context) {
 
 func initialJoin(hostName string) error {
 	log.Println("pub key is exists")
-	// /root/.ssh/authorised_keyに追記
+	// /root/.ssh/authorised_keyに公開鍵を追記
 	cmdstr := "cat /var/optima/" + hostName + "/" + PublicKeyName + " >> /root/.ssh/authorized_keys"
 	log.Printf("cmdstr = %s", cmdstr)
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
