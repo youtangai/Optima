@@ -85,6 +85,29 @@ func initialJoin(hostName string) error {
 	// 公開鍵の削除
 	cmdstr = "rm -f /var/optima/" + hostName + "/" + PublicKeyName
 	// /etc/hostsにipとエイリアスを記述
+	err = os.Chdir("/etc") // etcへ移動
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
 
+	//ipaddrを取得
+	ipAddr, err := db.GetIPAddrByHostName(hostName)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	//入力したい文字列を生成
+	inputString := ipAddr + " " + hostName + "\n"
+	file, err := os.Open("hosts") //ファイルを開く
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer file.Close()
+
+	//書込み
+	file.Write(([]byte)(inputString))
 	return nil
 }
