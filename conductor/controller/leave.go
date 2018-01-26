@@ -19,10 +19,12 @@ import (
 
 const (
 	AUTH_PATH       = "/auth/tokens?nocatalog"
-	ZUN_HOST        = "192.168.64.12:9517"
+	ZUN_HOST        = "http://192.168.64.12:9517"
 	ZUN_PATH        = "/v1/containers/"
 	CHECKPOINT_PORT = "62072"
+	CHECKPOINT_PATH = "/checkpoint"
 	RESTORE_PORT    = "62073"
+	RESTORE_PATH    = "/restore"
 )
 
 //LeaveController is 脱退処理のコントローラ
@@ -153,7 +155,45 @@ func createContainer(imageName string) (string, error) {
 }
 
 func checkpointContainer(containerID, hostName string) (string, error) {
-	return "/var/optima/hostname/containerid", nil
+	jsonStr := `
+	{
+		"container_id":"` + containerID + `"
+	}
+	`
+
+	req, err := http.NewRequest(
+		"POST",
+		"http://"+hostName+":"+CHECKPOINT_PORT+CHECKPOINT_PATH,
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	//コンテントタイプをせってい
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+	bytebody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	var chkDirPathJSON interface{}
+	err = json.Unmarshal(bytebody, &chkDirPathJSON)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	chkDirPath := chkDirPathJSON.(map[string]interface{})["chk_dir_path"].(string)
+
+	return chkDirPath, nil
 }
 
 //コンテナ削除
