@@ -235,6 +235,43 @@ func deleteContainer(uuid string) error {
 }
 
 func restoreContainer(containerID, restoreDir, hostName string) error {
+	jsonStr := `
+	{
+		"container_id":"` + containerID + `",
+		"restore_dir":"` + restoreDir + `"
+	}
+	`
+
+	req, err := http.NewRequest(
+		"POST",
+		"http://"+hostName+":"+RESTORE_PORT+RESTORE_PATH,
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	//コンテントタイプをせってい
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	defer resp.Body.Close()
+	byteBody, err := ioutil.ReadAll(resp.Body)
+	var messageJSON interface{}
+	err = json.Unmarshal(byteBody, &messageJSON)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	message := messageJSON.(map[string]interface{})["message"].(string)
+	log.Println("restore message " + message)
+
 	return nil
 }
 
