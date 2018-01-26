@@ -16,9 +16,16 @@ services:
       - 62070:62070
     links:
       - db
-  monitor:
+  monitor1:
     build: ./monitor
-    ports:
-      - 62071:62071
     links:
       - conductor
+  monitor2:
+    build: ./monitor
+    links:
+      - conductor
+  monitor3:
+    build: ./monitor
+    links:
+      - conductor
+    
