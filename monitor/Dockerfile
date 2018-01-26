@@ -5,6 +5,7 @@ WORKDIR /app
 RUN yum install -y openssh-clients
 COPY monitor /app
 COPY join_script.sh /app
+COPY leave_script.sh /app
 ENV CONDUCTOR_IP=conductor
 ENTRYPOINT ./monitor -conductor_ip=conductor
 EXPOSE 62071
