@@ -3,6 +3,8 @@ package controller
 import (
 	"crypto/rand"
 	"encoding/binary"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -102,7 +104,51 @@ func LeaveController(c *gin.Context) {
 
 func createContainer(imageName string) (string, error) {
 	//openstackにコンテナ作成を依頼
-	return "uuid", nil
+	token, err := authKeyStone()
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	jsonStr := `
+	{
+		"image":"` + imageName + `",
+		"name":"` + randomString() + `"
+	}
+	`
+
+	req, err := http.NewRequest(
+		"POST",
+		ZUN_HOST+ZUN_CREATE_PAHT,
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	//コンテントタイプをせってい
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Subject-Token", token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+	bytebody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	var containerData interface{}
+	err = json.Unmarshal(bytebody, &containerData)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	uuid := containerData.(map[string]interface{})["uuid"].(string)
+
+	return uuid, nil
 }
 
 func checkpointContainer(containerID, hostName string) (string, error) {
