@@ -3,10 +3,17 @@ package controller
 import (
 	"log"
 	"net/http"
+	"os"
+
+	"bytes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/conductor/db"
 	"github.com/youtangai/Optima/conductor/model"
+)
+
+const (
+	AUTH_PATH = "/auth/tokens?nocatalog"
 )
 
 //LeaveController is 脱退処理のコントローラ
@@ -103,4 +110,68 @@ func deleteContainer(uuid string) error {
 
 func restoreContainer(containerID, restoreDir, hostName string) error {
 	return nil
+}
+
+func authKeyStone() (string, error) {
+	jsonStr := createAuthJsonStr()
+	authURL := os.Getenv("OS_AUTH_URL")
+
+	req, err := http.NewRequest(
+		"POST",
+		authURL+AUTH_PATH,
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	//コンテントタイプをせってい
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+	token := resp.Header.Get("X-Subject-Token")
+
+	return token, nil
+}
+
+func createAuthJsonStr() string {
+	userDomainName := os.Getenv("OS_USER_DOMAIN_NAME")
+	userName := os.Getenv("OS_USERNAME")
+	password := os.Getenv("OS_PASSWORD")
+	projectDomainName := os.Getenv("OS_PROJECT_DOMAIN_NAME")
+	projectName := os.Getenv("OS_PROJECT_NAME")
+	jsonStr := `
+{ 
+    "auth": { 
+        "identity": { 
+            "methods":[
+                "password"
+            ],
+            "password": {
+                "user": {
+                    "domain": {
+                        "name": "` + userDomainName + `"
+                    },
+                    "name": "` + userName + `", 
+                    "password": "` + password + `"
+                } 
+            } 
+        }, 
+        "scope": { 
+            "project": { 
+                "domain": { 
+                    "name": "` + projectDomainName + `" 
+                }, 
+                "name":  "` + projectName + `" 
+            } 
+        } 
+    }
+}
+`
+	return jsonStr
 }
