@@ -87,7 +87,52 @@ func JoinController(c *gin.Context) {
 			}
 		}
 	}
-	//高負荷サーバチェック 及びレストア試行
+	//負荷順にサーバを取得
+	hosts, err := db.GetHostOrderByLoadIndicator()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Fatal(err)
+	}
+	for _, host := range hosts {
+		//そのホスト内のコンテナすべてを取得
+		containers, err := db.GetContainersByHostName(host.HostName)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			log.Fatal(err)
+		}
+		//コンテナの数が2未満であればこのホストはスキップする
+		if len(*containers) < 2 {
+			continue
+		}
+		//コンテナを回す
+		for _, container := range *containers {
+			//コンテナを作る
+			uuid, err := createContainer(container.Image)
+			if err != nil {
+				log.Println("failed create container")
+				log.Println(err)
+				continue
+			}
+			//元のコンテナをチェックポイントする
+			chkDir, err := checkpointContainer(container.ContainerID, container.Host)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+			//uuidからターゲットコンテナを特定
+			targetContainer, err := db.GetContainerByUUID(uuid)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+			//レストアする
+			err = restoreContainer(targetContainer.ContainerID, chkDir, targetContainer.Host)
+			if err != nil {
+				log.Println("failed restore container")
+				log.Fatal(err)
+			}
+		}
+	}
 
 }
 
