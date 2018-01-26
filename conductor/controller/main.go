@@ -29,6 +29,7 @@ func RegistLoadIndicator(c *gin.Context) {
 	}
 }
 
+//CreateDirController is ディレクトリを作成するコントローラ
 func CreateDirController(c *gin.Context) {
 	//ディレクトリを作る
 	json := new(model.JoinJson)
@@ -52,6 +53,7 @@ func CreateDirController(c *gin.Context) {
 	return
 }
 
+//JoinController is 参加を受け付けるコントローラ
 func JoinController(c *gin.Context) {
 
 	json := new(model.JoinJson)
@@ -72,6 +74,7 @@ func JoinController(c *gin.Context) {
 	log.Println("pub key not found")
 }
 
+//一番最初の参加時の処理
 func initialJoin(hostName string) error {
 	log.Println("pub key is exists")
 	// /root/.ssh/authorised_keyに公開鍵を追記
