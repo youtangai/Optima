@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -11,7 +12,7 @@ import (
 )
 
 const (
-	SecretKeyName = "optima_key.pub"
+	PublicKeyName = "optima_key.pub"
 )
 
 // RegistLoadIndicator is 負荷指標を登録するメソッド
@@ -57,7 +58,7 @@ func JoinController(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	if bool := util.FileExists(SecretKeyName); bool {
+	if bool := util.FileExists(PublicKeyName); bool {
 		//公開鍵が存在したら
 		initialJoin(hostName)
 	}
@@ -68,5 +69,6 @@ func initialJoin(hostName string) error {
 	// /root/.ssh/authorised_keyに追記
 	// 公開鍵の削除
 	// /etc/hostsにipとエイリアスを記述
+	log.Println("pub key is exists")
 	return nil
 }
