@@ -20,3 +20,20 @@ func RegistLoadIndicator(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 }
+
+func CreateDirController(c *gin.Context) {
+	//ディレクトリを作る
+}
+
+func JoinController(c *gin.Context) {
+	//公開鍵が存在したら initialJoin
+	//公開鍵が存在しなかったら 再配置処理へ
+}
+
+func initialJoin(hostName string) error {
+	//公開鍵を受け取っているはず
+	// /root/.ssh/authorised_keyに追記
+	// 公開鍵の削除
+	// /etc/hostsにipとエイリアスを記述
+	return nil
+}

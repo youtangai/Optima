@@ -19,5 +19,7 @@ func main() {
 		})
 	})
 	router.POST("/load_indicator", controller.RegistLoadIndicator)
+	router.POST("/create_dir", controller.CreateDirController)
+	router.POST("/join", controller.JoinController)
 	router.Run(":" + GIN_PORT)
 }
