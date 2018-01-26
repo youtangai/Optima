@@ -146,3 +146,13 @@ func DeleteCheckPointDir(dir model.Checkpoint) error {
 	}
 	return nil
 }
+
+//GetHighestLoadIndicatorHost is 最も高負荷なホストを取得する関数
+func GetHighestLoadIndicatorHost() (model.LoadIndicator, error) {
+	loadIndicator := new(model.LoadIndicator)
+	err := DataBase.Order("load_indicator desc").Limit(1).Find(loadIndicator).Error
+	if err != nil {
+		return *loadIndicator, err
+	}
+	return *loadIndicator, nil
+}
