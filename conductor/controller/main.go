@@ -30,7 +30,11 @@ func CreateDirController(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	hostName := json.HostName
-	err = os.Mkdir("/var/optima/"+hostName, 0777)
+	err = os.Chdir("/var")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	err = os.MkdirAll("optima/"+hostName, 0777)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
