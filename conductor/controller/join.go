@@ -129,6 +129,14 @@ func JoinController(c *gin.Context) {
 			err = restoreContainer(targetContainer.ContainerID, chkDir, targetContainer.Host)
 			if err != nil {
 				log.Println("failed restore container")
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+			//元のコンテナを削除する
+			err = deleteContainer(container.UUID)
+			if err != nil {
+				log.Println("failed restore container")
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				log.Fatal(err)
 			}
 		}
