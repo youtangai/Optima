@@ -15,10 +15,7 @@ func main() {
 	if db.HasTable(&model.LoadIndicator{}) {
 		log.Println("load indicator is exist")
 	}
-	if db.HasTable(&model.Host{}) {
-		log.Println("hosts is exist")
-	}
-	db.AutoMigrate(&model.Host{}, &model.LoadIndicator{})
+	db.AutoMigrate(&model.LoadIndicator{}, &model.Checkpoint{})
 
 	if db.HasTable(&model.Container{}) {
 		log.Println("find container table")
