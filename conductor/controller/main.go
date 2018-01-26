@@ -84,6 +84,12 @@ func initialJoin(hostName string) error {
 	}
 	// 公開鍵の削除
 	cmdstr = "rm -f /var/optima/" + hostName + "/" + PublicKeyName
+	_, err = exec.Command("sh", "-c", cmdstr).Output()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	log.Println("delete pub key")
 	// /etc/hostsにipとエイリアスを記述
 	err = os.Chdir("/etc") // etcへ移動
 	if err != nil {
