@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/conductor/db"
@@ -68,12 +69,22 @@ func JoinController(c *gin.Context) {
 		initialJoin(hostName)
 	}
 	//公開鍵が存在しなかったら 再配置処理へ
+	log.Println("pub key not found")
 }
 
 func initialJoin(hostName string) error {
-	// /root/.ssh/authorised_keyに追記
-	// 公開鍵の削除
-	// /etc/hostsにipとエイリアスを記述
 	log.Println("pub key is exists")
+	// /root/.ssh/authorised_keyに追記
+	cmdstr := "cat /var/optima/" + hostName + "/" + PublicKeyName + " >> /root/.ssh/authorized_keys"
+	log.Printf("cmdstr = %s", cmdstr)
+	_, err := exec.Command("sh", "-c", cmdstr).Output()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	// 公開鍵の削除
+	cmdstr = "rm -f /var/optima/" + hostName + "/" + PublicKeyName
+	// /etc/hostsにipとエイリアスを記述
+
 	return nil
 }
