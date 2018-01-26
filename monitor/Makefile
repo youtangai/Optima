@@ -7,3 +7,11 @@ clean: monitor
 send: monitor join_script.sh
 	scp monitor root@192.168.64.14:/opt
 	scp join_script.sh root@192.168.64.14:/opt
+
+sendall: monitor join_script.sh
+	scp monitor root@192.168.64.14:/opt
+	scp join_script.sh root@192.168.64.14:/opt
+	scp monitor root@192.168.64.16:/opt
+	scp join_script.sh root@192.168.64.16:/opt
+	scp monitor root@192.168.64.17:/opt
+	scp join_script.sh root@192.168.64.17:/opt
