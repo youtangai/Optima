@@ -69,6 +69,23 @@ func JoinController(c *gin.Context) {
 	//チェックポイントが0でなければ
 	if len(*checkpoints) != 0 {
 		//チェックポイントのレストア試行
+		for _, checkpoint := range *checkpoints {
+			uuid, err := createContainer(checkpoint.ContainerImage)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+			targetContainer, err := db.GetContainerByUUID(uuid)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+			err = restoreContainer(targetContainer.ContainerID, checkpoint.CheckDir, targetContainer.Host)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				log.Fatal(err)
+			}
+		}
 	}
 	//高負荷サーバチェック 及びレストア試行
 
