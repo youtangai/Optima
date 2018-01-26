@@ -3,6 +3,6 @@ FROM centos:latest
 # ↑https通信を可能にする為
 WORKDIR /app
 COPY main /app
-COPY ../join_script/join_script /app
+COPY join_script.sh /app
 ENTRYPOINT ./main -conductor_ip=conductor
 EXPOSE 62071
