@@ -1,7 +1,7 @@
 package config
 
 type Configuration struct {
-	ConductorHost string `envconfig:"CONDUCTOR_HOST" default:"conductor"`
+	ConductorHost string
 }
 
 var (

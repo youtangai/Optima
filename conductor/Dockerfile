@@ -4,5 +4,5 @@ FROM centos:latest
 WORKDIR /app
 COPY main /app
 ENTRYPOINT ./main
-ENV DB_HOST=db
+ENV OPTIMA_DB_HOST=db
 EXPOSE 62070
