@@ -92,9 +92,14 @@ func GetContainersByHostName(hostname string) (*[]model.Container, error) {
 //GetContainerByUUID is uuidからコンテナを１つ取得する
 func GetContainerByUUID(uuid string) (*model.Container, error) {
 	container := new(model.Container)
-	err := DataBase.Where(&model.Container{UUID: uuid}).First(container).Error
-	if err != nil {
-		return container, err
+	for {
+		err := DataBase.Where(&model.Container{UUID: uuid}).First(container).Error
+		if err != nil {
+			return container, err
+		}
+		if container.Host != "" {
+			break
+		}
 	}
 	return container, nil
 }
