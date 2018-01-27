@@ -68,7 +68,7 @@ func createContainer(imageName string) (string, error) {
 		return "", err
 	}
 	log.Printf("containerData = %+v", containerData)
-	uuid := containerData.(map[string]interface{})["name"].(string)
+	uuid := containerData.(map[string]interface{})["uuid"].(string)
 
 	return uuid, nil
 }
