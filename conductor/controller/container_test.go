@@ -41,6 +41,7 @@ func TestCheckpointContainer(t *testing.T) {
 func TestRestoreContainer(t *testing.T) {
 	uuid, _ := createContainer("yotanagai/loop")
 	container, _ := db.GetContainerByUUID(uuid)
+	fmt.Printf("container info = %+v", container)
 	err := restoreContainer(container.ContainerID, "restoredir", container.Host)
 	if err != nil {
 		t.Fatal(err)

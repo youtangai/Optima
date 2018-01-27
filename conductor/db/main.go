@@ -97,7 +97,7 @@ func GetContainerByUUID(uuid string) (*model.Container, error) {
 		if err != nil {
 			return container, err
 		}
-		if container.Host != "" {
+		if container.Host != "" && container.ContainerID != "" {
 			break
 		}
 	}
