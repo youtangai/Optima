@@ -84,6 +84,14 @@ func LeaveController(c *gin.Context) {
 				log.Fatal(err)
 			}
 			log.Println("leave:restored container " + container.ContainerID)
+			//コンテナを削除する
+			err = deleteContainer(container.UUID)
+			if err != nil {
+				log.Println("cannot delete container")
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				log.Fatal(err)
+			}
+			log.Println("leave:checkpoint container " + container.ContainerID)
 		}
 	}
 	//load_indicator削除
