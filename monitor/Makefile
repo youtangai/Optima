@@ -16,3 +16,8 @@ sendleav:
 	scp leave_script.sh root@192.168.64.14:/opt
 	scp leave_script.sh root@192.168.64.16:/opt
 	scp leave_script.sh root@192.168.64.17:/opt
+
+sendjoin:
+	scp join_script.sh root@192.168.64.14:/opt
+	scp join_script.sh root@192.168.64.16:/opt
+	scp join_script.sh root@192.168.64.17:/opt

@@ -1,5 +1,6 @@
 #!/bin/bash
 DIR="/var/optima"
+systemctl start optima-monitor
 if [ ! -d ${DIR} ]; then
     echo $CONDUCTOR_IP
     mkdir -p ${DIR}
