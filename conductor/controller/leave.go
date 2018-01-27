@@ -15,6 +15,12 @@ func LeaveController(c *gin.Context) {
 	c.ShouldBindJSON(json)
 	hostName := json.HostName
 	log.Printf("leave: hostname = %s", hostName)
+	//ホストを無効化
+	err := disableHost(hostName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		log.Fatal(err)
+	}
 	//受け取ったホスト名のコンテナを調べる
 	containers, err := db.GetContainersByHostName(hostName)
 	if err != nil {

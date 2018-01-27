@@ -51,6 +51,13 @@ func JoinController(c *gin.Context) {
 	}
 	log.Printf("join:recieve json = %+v", json)
 	hostName := json.HostName
+	//サービスの有効化
+	err = enableHost(hostName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Fatal(err)
+	}
+	//公開鍵を確認するためにディレクトリ変更
 	err = os.Chdir("/var/optima/" + hostName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

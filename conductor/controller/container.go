@@ -14,13 +14,17 @@ import (
 )
 
 const (
-	AUTH_PATH       = "/auth/tokens?nocatalog"
-	ZUN_HOST        = "http://192.168.64.12:9517"
-	ZUN_PATH        = "/v1/containers/"
-	CHECKPOINT_PORT = "62072"
-	CHECKPOINT_PATH = "/checkpoint"
-	RESTORE_PORT    = "62073"
-	RESTORE_PATH    = "/restore"
+	AUTH_PATH                = "/auth/tokens?nocatalog"
+	ZUN_HOST                 = "http://192.168.64.12:9517"
+	ZUN_PATH                 = "/v1/containers/"
+	ZUN_DISABLE_SERVICE_PATH = "/v1/services/disable"
+	ZUN_ENABLE_SERVICE_PATH  = "/v1/services/enable"
+	ZUN_SERVICE_BINARY       = "zun-compute"
+	CHECKPOINT_PORT          = "62072"
+	CHECKPOINT_PATH          = "/checkpoint"
+	RESTORE_PORT             = "62073"
+	RESTORE_PATH             = "/restore"
+	DISABLE_REASON           = "optima-leave"
 )
 
 func createContainer(imageName string) (string, error) {
@@ -191,6 +195,81 @@ func restoreContainer(containerID, restoreDir, hostName string) error {
 	message := messageJSON.(map[string]interface{})["message"].(string)
 	log.Println("restore message " + message)
 
+	return nil
+}
+
+//ホストを無効化する処理
+func disableHost(hostname string) error {
+	token, err := authKeyStone()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"PUT",
+		ZUN_HOST+ZUN_DISABLE_SERVICE_PATH,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	//token 設定
+	req.Header.Set("X-Auth-Token", token)
+
+	//クエリパラム設定
+	query := req.URL.Query()
+	query.Add("binary", ZUN_SERVICE_BINARY)
+	query.Add("host", hostname)
+	query.Add("disabled_reason", DISABLE_REASON)
+	req.URL.RawQuery = query.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer resp.Body.Close()
+	log.Println("zunservice: disable hostname = " + hostname)
+	return nil
+}
+
+//ホストを有効化する処理
+func enableHost(hostname string) error {
+	token, err := authKeyStone()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"PUT",
+		ZUN_HOST+ZUN_ENABLE_SERVICE_PATH,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	//token 設定
+	req.Header.Set("X-Auth-Token", token)
+
+	//クエリパラム設定
+	query := req.URL.Query()
+	query.Add("binary", ZUN_SERVICE_BINARY)
+	query.Add("host", hostname)
+	req.URL.RawQuery = query.Encode()
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer resp.Body.Close()
+	log.Println("zunservice: enable hostname = " + hostname)
 	return nil
 }
 
