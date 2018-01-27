@@ -20,3 +20,11 @@ func TestAuthKeyStone(t *testing.T) {
 	}
 	fmt.Println(token)
 }
+
+func TestDeleteContainer(t *testing.T) {
+	uuid, _ := createContainer("cirros")
+	err := deleteContainer(uuid)
+	if err != nil {
+		t.Fatalf("delete container err = %v", err)
+	}
+}
