@@ -42,16 +42,19 @@ func CreateDirController(c *gin.Context) {
 
 //JoinController is 参加を受け付けるコントローラ
 func JoinController(c *gin.Context) {
-
+	log.Println("join:join process start")
 	json := new(model.JoinJson)
 	err := c.ShouldBindJSON(json)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Fatal(err)
 	}
+	log.Printf("join:recieve json = %+v", json)
 	hostName := json.HostName
 	err = os.Chdir("/var/optima/" + hostName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Fatal(err)
 	}
 	if bool := util.FileExists(PublicKeyName); bool {
 		//公開鍵が存在したら
@@ -59,13 +62,13 @@ func JoinController(c *gin.Context) {
 	}
 	//公開鍵が存在しなかったら 再配置処理へ
 	log.Println("relocation start")
-	//TODO再配置処理の実装
 	//zun.checkpointテーブルの確認
 	checkpoints, err := db.GetCheckPointDirs()
 	if err != nil {
-		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		log.Fatal(err)
 	}
+	log.Printf("join:checkpoints = %+v", *checkpoints)
 	//チェックポイントが0でなければ
 	if len(*checkpoints) != 0 {
 		//チェックポイントのレストア試行
@@ -73,39 +76,46 @@ func JoinController(c *gin.Context) {
 			uuid, err := createContainer(checkpoint.ContainerImage)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Println("join:cannot create container skip this checkpoint")
+				continue
 			}
 			targetContainer, err := db.GetContainerByUUID(uuid)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("join:cannot get restore target container's info err = %+v", err)
 			}
+			log.Printf("join:restore target container info = %+v", *targetContainer)
 			err = restoreContainer(targetContainer.ContainerID, checkpoint.CheckDir, targetContainer.Host)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("join:cannnot restore container err = %+v", err)
 			}
 		}
 	}
 	//負荷順にサーバを取得
 	hosts, err := db.GetHostOrderByLoadIndicator()
+	log.Printf("join:hots = %+v", hosts)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Fatal(err)
+		log.Fatalf("join:cannot get hosts err = %+v", err)
 	}
 	for _, host := range hosts {
+		log.Printf("join:current host = %+v", host)
 		//そのホスト内のコンテナすべてを取得
 		containers, err := db.GetContainersByHostName(host.HostName)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			log.Fatal(err)
+			log.Fatalf("join:cannot get containers err = %+v", err)
 		}
+		log.Printf("join:containers = %+v", *containers)
 		//コンテナの数が2未満であればこのホストはスキップする
 		if len(*containers) < 2 {
+			log.Println("join:skip because container's num < 2")
 			continue
 		}
 		//コンテナを回す
 		for _, container := range *containers {
+			log.Printf("join:current container info = %+v", container)
 			//コンテナを作る
 			uuid, err := createContainer(container.Image)
 			if err != nil {
@@ -113,32 +123,35 @@ func JoinController(c *gin.Context) {
 				log.Println(err)
 				continue
 			}
+			log.Printf("join:created container uuid = %s", uuid)
 			//元のコンテナをチェックポイントする
 			chkDir, err := checkpointContainer(container.ContainerID, container.Host)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("join:cannot checkpoint container err = %+v", err)
 			}
+			log.Printf("join:chk dir path = %s", chkDir)
 			//uuidからターゲットコンテナを特定
 			targetContainer, err := db.GetContainerByUUID(uuid)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("join:cannot get restore target containers info err = %+v", err)
 			}
+			log.Printf("join:restore target contaiers info = %+v", *targetContainer)
 			//レストアする
 			err = restoreContainer(targetContainer.ContainerID, chkDir, targetContainer.Host)
 			if err != nil {
-				log.Println("failed restore container")
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("failed restore container err = %+v", err)
 			}
+			log.Println("join:restore current container")
 			//元のコンテナを削除する
 			err = deleteContainer(container.UUID)
 			if err != nil {
-				log.Println("failed restore container")
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatal(err)
+				log.Fatalf("join:cannot delete container err = %+v", err)
 			}
+			log.Println("join:complete delete current container")
 		}
 	}
 

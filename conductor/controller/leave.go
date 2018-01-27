@@ -69,7 +69,7 @@ func LeaveController(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 				log.Fatal(err)
 			}
-			log.Printf("leave:restore target container info = %+v", targetContainer)
+			log.Printf("leave:restore target container info = %+v", *targetContainer)
 			//チェックポイントする
 			chkdirpath, err := checkpointContainer(container.ContainerID, container.Host)
 			if err != nil {
