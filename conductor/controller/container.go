@@ -48,7 +48,7 @@ func createContainer(imageName string) (string, error) {
 	}
 	//コンテントタイプをせってい
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Subject-Token", token)
+	req.Header.Set("X-Auth-Token", token)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -134,7 +134,7 @@ func deleteContainer(uuid string) error {
 		return err
 	}
 	//token 設定
-	req.Header.Set("X-Subject-Token", token)
+	req.Header.Set("X-Auth-Token", token)
 
 	//クエリパラム設定
 	query := req.URL.Query()
