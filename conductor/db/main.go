@@ -125,7 +125,7 @@ func DeleteLoadIndicator(hostName string) error {
 		return err
 	}
 
-	err = DataBase.Delete(&loadIndicator).Error
+	err = DataBase.Delete(loadIndicator).Error
 	if err != nil {
 		return err
 	}
