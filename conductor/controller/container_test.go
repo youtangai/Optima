@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/youtangai/Optima/conductor/db"
 )
@@ -46,4 +47,23 @@ func TestRestoreContainer(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestStartContainer(t *testing.T) {
+	//container run
+	sourceuuid, _ := createContainer("yotanagai/loop")
+	sourcecontainer, _ := db.GetContainerByUUID(sourceuuid)
+	startContainer(sourceuuid)
+	//create restore container
+	targetuuid, _ := createContainer("yotanagai/loop")
+	targetcontainer, _ := db.GetContainerByUUID(targetuuid)
+	start := time.Now()
+	chkdir, _ := checkpointContainer(sourcecontainer.ContainerID, sourcecontainer.Host)
+	end := time.Now()
+	fmt.Printf("checkpoint took time = %v\n", end.Sub(start))
+	start = time.Now()
+	restoreContainer(targetcontainer.ContainerID, chkdir, targetcontainer.Host)
+	end = time.Now()
+	fmt.Printf("restore took time = %v\n", end.Sub(start))
+	deleteContainer(sourceuuid)
 }
