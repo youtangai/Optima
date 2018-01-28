@@ -343,6 +343,7 @@ func randomString() string {
 }
 
 func startContainer(uuid string) error {
+	//start container
 	token, err := authKeyStone()
 	if err != nil {
 		log.Fatal(err)
@@ -351,7 +352,7 @@ func startContainer(uuid string) error {
 
 	req, err := http.NewRequest(
 		"POST",
-		ZUN_HOST+ZUN_PATH,
+		ZUN_HOST+ZUN_PATH+uuid+"/start",
 		nil,
 	)
 	if err != nil {
