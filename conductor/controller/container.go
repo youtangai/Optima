@@ -341,3 +341,32 @@ func randomString() string {
 	binary.Read(rand.Reader, binary.LittleEndian, &n)
 	return strconv.FormatUint(n, 36)
 }
+
+func startContainer(uuid string) error {
+	token, err := authKeyStone()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		ZUN_HOST+ZUN_PATH,
+		nil,
+	)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	//コンテントタイプをせってい
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Auth-Token", token)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	defer resp.Body.Close()
+	return nil
+}
