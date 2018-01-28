@@ -10,3 +10,7 @@ sendall: checkpointer
 	scp checkpointer root@192.168.64.14:/opt
 	scp checkpointer root@192.168.64.16:/opt
 	scp checkpointer root@192.168.64.17:/opt
+
+honban: checkpointer
+	scp checkpointer root@10.6.18.218:/opt
+	scp checkpointer root@10.6.18.166:/opt

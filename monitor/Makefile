@@ -21,3 +21,7 @@ sendjoin:
 	scp join_script.sh root@192.168.64.14:/opt
 	scp join_script.sh root@192.168.64.16:/opt
 	scp join_script.sh root@192.168.64.17:/opt
+
+sendhonban:
+	scp monitor join_script.sh leave_script.sh root@10.6.18.218:/opt
+	scp monitor join_script.sh leave_script.sh root@10.6.18.166:/opt

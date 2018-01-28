@@ -15,7 +15,7 @@ import (
 
 const (
 	AUTH_PATH                = "/auth/tokens?nocatalog"
-	ZUN_HOST                 = "http://192.168.64.12:9517"
+	ZUN_HOST                 = "http://10.6.18.162:9517"
 	ZUN_PATH                 = "/v1/containers/"
 	ZUN_DISABLE_SERVICE_PATH = "/v1/services/disable"
 	ZUN_ENABLE_SERVICE_PATH  = "/v1/services/enable"
