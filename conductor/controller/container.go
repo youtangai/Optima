@@ -15,7 +15,7 @@ import (
 
 const (
 	AUTH_PATH                = "/auth/tokens?nocatalog"
-	ZUN_HOST                 = "http://192.168.64.12:9517"
+	ZUN_HOST                 = "http://10.6.18.162:9517"
 	ZUN_PATH                 = "/v1/containers/"
 	ZUN_DISABLE_SERVICE_PATH = "/v1/services/disable"
 	ZUN_ENABLE_SERVICE_PATH  = "/v1/services/enable"
@@ -38,6 +38,14 @@ func createContainer(imageName string) (string, error) {
 	{
 		"image":"` + imageName + `",
 		"name":"` + randomString() + `"
+		"nets": [
+        {
+            "v4-fixed-ip": "",
+            "network": "c1bf71f7-4c4e-4abe-9c1e-b80785e07c8b",
+            "v6-fixed-ip": "",
+            "port": ""
+        }
+    ]
 	}
 	`
 
