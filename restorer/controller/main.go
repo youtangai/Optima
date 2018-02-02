@@ -89,7 +89,7 @@ func scpRestoreDir(restoreDir string) (string, error) {
 		return "", err
 	}
 	end := time.Now()
-	fmt.Printf("download checkpoint time = %v\n", end.Sub(start))
+	fmt.Printf("download checkpoint took time = %v\n", end.Sub(start))
 	log.Printf("cmd = %s", cmdstr)
 	log.Printf("restoreDir= %s\n", restoreDir)
 	log.Printf("output = %s", output)
