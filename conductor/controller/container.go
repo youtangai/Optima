@@ -37,15 +37,15 @@ func createContainer(imageName string) (string, error) {
 	jsonStr := `
 	{
 		"image":"` + imageName + `",
-		"name":"` + randomString() + `"
+		"name":"` + randomString() + `",
 		"nets": [
-        {
-            "v4-fixed-ip": "",
-            "network": "c1bf71f7-4c4e-4abe-9c1e-b80785e07c8b",
-            "v6-fixed-ip": "",
-            "port": ""
-        }
-    ]
+			{
+				"v4-fixed-ip": "",
+				"network": "c1bf71f7-4c4e-4abe-9c1e-b80785e07c8b",
+				"v6-fixed-ip": "",
+				"port": ""
+			}
+    	]
 	}
 	`
 
