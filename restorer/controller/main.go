@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/restorer/config"
@@ -50,19 +52,25 @@ func restore(restoreTargetContainerID, restoreSourceContainerID string) error {
 	cmdstr := "docker start --checkpoint=" + restoreSourceContainerID + " --checkpoint-dir=/var/optima/ " + restoreTargetContainerID
 	log.Printf("cmd = %s", cmdstr)
 
+	start := time.Now()
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
+	end := time.Now()
+	fmt.Printf("restore took time = %v\n", end.Sub(start))
 
 	cmdstr = "rm -rf /var/optima/" + restoreSourceContainerID
 	log.Printf("cmd = %s", cmdstr)
+	start = time.Now()
 	_, err = exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
+	end = time.Now()
+	fmt.Printf("remove checkpoint took time = %v\n", end.Sub(start))
 
 	return nil
 }
@@ -74,11 +82,14 @@ func scpRestoreDir(restoreDir string) (string, error) {
 
 	//レストアフォルダのダウンロード
 	cmdstr := "scp -o StrictHostKeyChecking=no -i " + keyPath + " -r root@" + contollerIP + ":" + restoreDir + " /var/optima/"
+	start := time.Now()
 	output, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return "", err
 	}
+	end := time.Now()
+	fmt.Printf("download checkpoint time = %v\n", end.Sub(start))
 	log.Printf("cmd = %s", cmdstr)
 	log.Printf("restoreDir= %s\n", restoreDir)
 	log.Printf("output = %s", output)

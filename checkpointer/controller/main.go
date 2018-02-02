@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/Optima/checkpointer/config"
@@ -60,12 +62,14 @@ func checkpoint(containerID string) error {
 	// }
 
 	cmdstr := "docker checkpoint create " + containerID + " " + containerID
+	start := time.Now()
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-
+	end := time.Now()
+	fmt.Printf("checkpoint took time = %v\n", end.Sub(start))
 	return nil
 }
 
@@ -79,11 +83,14 @@ func scpCheckpointDir(containerID string) (string, error) {
 		log.Fatal(err)
 	}
 	cmdstr := "scp -o StrictHostKeyChecking=no -i " + keyPath + " -r " + sourceDir + " root@" + contollerIP + ":/var/optima/" + hostName + "/"
+	start := time.Now()
 	output, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
 		return "", err
 	}
+	end := time.Now()
+	fmt.Printf("scp took time = %v\n", end.Sub(start))
 	log.Printf("cmd = %s", cmdstr)
 	log.Printf("sourceDir= %s\n", sourceDir)
 	log.Printf("output = %s", output)
