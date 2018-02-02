@@ -71,5 +71,9 @@ func TestStartContainer(t *testing.T) {
 	start = time.Now()
 	deleteContainer(sourceuuid)
 	end = time.Now()
-	fmt.Printf("delete container took time = %v\n", end.Sub(start))
+	fmt.Printf("delete source container took time = %v\n", end.Sub(start))
+	start = time.Now()
+	deleteContainer(targetcontainer.UUID)
+	end = time.Now()
+	fmt.Printf("delete target container took time = %v\n", end.Sub(start))
 }
