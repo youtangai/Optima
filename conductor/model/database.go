@@ -42,7 +42,7 @@ type Container struct {
 	WebsocketToken  string    `gorm:"column:websocket_token"`
 	SecurityGroups  string    `gorm:"column:security_groups;type:text"`
 	AutoRemove      bool      `gorm:"column:auto_remove"`
-	Avatar          []Avatar
+	Avatar          []Avatar  `gorm:"ForeignKey:UUID;AssociationForeignKey:UUID"`
 }
 
 type Checkpoint struct {
@@ -53,9 +53,9 @@ type Checkpoint struct {
 }
 
 type Avatar struct {
-	UUID        string
+	UUID        string `gorm:"column:uuid;type:varchar(36);unique"`
 	Host        string
 	ContainerID string
 	CreatedAt   time.Time
-	Continer    Container `gorm:"ForeignKey:UUID;AssociationForeignKey:UUID"`
+	Continer    Container
 }

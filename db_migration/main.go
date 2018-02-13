@@ -28,7 +28,7 @@ func main() {
 		log.Println("find avatar table")
 	} else {
 		log.Println("could not find avatar table")
-		db.AutoMigrate(&model.Avatar{})
+		db.AutoMigrate(&model.Avatar{}).AddForeignKey("uuid", "container(uuid)", "RESTRICT", "RESTRICT")
 	}
 }
 
