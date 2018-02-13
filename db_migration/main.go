@@ -23,6 +23,13 @@ func main() {
 		log.Println("could not find container table")
 		db.AutoMigrate(&model.Container{})
 	}
+
+	if db.HasTable(&model.Avatar{}) {
+		log.Println("find avatar table")
+	} else {
+		log.Println("could not find avatar table")
+		db.AutoMigrate(&model.Avatar{})
+	}
 }
 
 func readContainer() {
