@@ -42,6 +42,7 @@ type Container struct {
 	WebsocketToken  string    `gorm:"column:websocket_token"`
 	SecurityGroups  string    `gorm:"column:security_groups;type:text"`
 	AutoRemove      bool      `gorm:"column:auto_remove"`
+	Avatar          []Avatar
 }
 
 type Checkpoint struct {
@@ -49,4 +50,12 @@ type Checkpoint struct {
 	ContainerImage string `gorm:"not null"`
 	CheckDir       string `gorm:"not null"`
 	IsRestored     bool   `gorm:"not null;default:false"`
+}
+
+type Avatar struct {
+	UUID        string
+	Host        string
+	ContainerID string
+	CreatedAt   time.Time
+	Continer    Container `gorm:"ForeignKey:UUID;AssociationForeignKey:UUID"`
 }
