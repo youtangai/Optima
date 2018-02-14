@@ -161,3 +161,8 @@ func GetHostOrderByLoadIndicator() ([]model.LoadIndicator, error) {
 	}
 	return *loadIndicators, nil
 }
+
+//RegistAvatar is コンテナの分身を登録するメソッド
+func RegistAvatar(uuid, host, containerid string) error {
+	return nil
+}
