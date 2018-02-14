@@ -11,11 +11,12 @@ import (
 	"strconv"
 
 	"bytes"
+
+	"github.com/youtangai/Optima/conductor/config"
 )
 
 const (
 	AUTH_PATH                = "/auth/tokens?nocatalog"
-	ZUN_HOST                 = "http://192.168.64.12:9517"
 	ZUN_PATH                 = "/v1/containers/"
 	ZUN_DISABLE_SERVICE_PATH = "/v1/services/disable"
 	ZUN_ENABLE_SERVICE_PATH  = "/v1/services/enable"
@@ -26,6 +27,16 @@ const (
 	RESTORE_PATH             = "/restore"
 	DISABLE_REASON           = "optima-leave"
 )
+
+var (
+	ZUN_HOST string
+	ZUN_PORT string
+)
+
+func init() {
+	ZUN_HOST = config.ZUNHost()
+	ZUN_PORT = config.ZUNPort()
+}
 
 func createContainer(imageName string) (string, error) {
 	//openstackにコンテナ作成を依頼
@@ -43,7 +54,7 @@ func createContainer(imageName string) (string, error) {
 
 	req, err := http.NewRequest(
 		"POST",
-		ZUN_HOST+ZUN_PATH,
+		ZUN_HOST+":"+ZUN_PORT+ZUN_PATH,
 		bytes.NewBuffer([]byte(jsonStr)),
 	)
 	if err != nil {
@@ -130,7 +141,7 @@ func deleteContainer(uuid string) error {
 
 	req, err := http.NewRequest(
 		"DELETE",
-		ZUN_HOST+ZUN_PATH+uuid,
+		ZUN_HOST+":"+ZUN_PORT+ZUN_PATH+uuid,
 		nil,
 	)
 	if err != nil {
@@ -208,7 +219,7 @@ func disableHost(hostname string) error {
 
 	req, err := http.NewRequest(
 		"PUT",
-		ZUN_HOST+ZUN_DISABLE_SERVICE_PATH,
+		ZUN_HOST+":"+ZUN_PORT+ZUN_DISABLE_SERVICE_PATH,
 		nil,
 	)
 	if err != nil {
@@ -246,7 +257,7 @@ func enableHost(hostname string) error {
 
 	req, err := http.NewRequest(
 		"PUT",
-		ZUN_HOST+ZUN_ENABLE_SERVICE_PATH,
+		ZUN_HOST+":"+ZUN_PORT+ZUN_ENABLE_SERVICE_PATH,
 		nil,
 	)
 	if err != nil {
@@ -352,7 +363,7 @@ func startContainer(uuid string) error {
 
 	req, err := http.NewRequest(
 		"POST",
-		ZUN_HOST+ZUN_PATH+uuid+"/start",
+		ZUN_HOST+":"+ZUN_PORT+ZUN_PATH+uuid+"/start",
 		nil,
 	)
 	if err != nil {
