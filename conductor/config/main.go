@@ -9,6 +9,7 @@ type Configuration struct {
 	DBName   string `envconfig:"OPTIMA_DB_NAME" default:"zun"`
 	DBPasswd string `envconfig:"OPTIMA_DB_PASSWD" default:"199507620"`
 	ZUNHost  string `envconfig:"ZUN_HOST" default:"localhost"`
+	ZUNPort  string `envconfig:"ZUN_PORT" default:"9517"`
 }
 
 var (
@@ -49,4 +50,8 @@ func DBPasswd() string {
 
 func ZUNHost() string {
 	return config.ZUNHost
+}
+
+func ZUNPort() string {
+	return config.ZUNPort
 }
