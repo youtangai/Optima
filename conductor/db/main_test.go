@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	TEST_HOST_NAME  = "zun1"
-	TEST_HOST_IP    = "10.0.0.2"
-	TEST_UUID       = "cb94b9de-f6d2-4135-befe-10642d42559b"
-	TEST_CHKDIR     = "/var/optima/zun1/hoge"
-	TEST_IMAGE_NAME = "yotanagai/loop"
+	TEST_HOST_NAME    = "zun1"
+	TEST_HOST_IP      = "10.0.0.2"
+	TEST_UUID         = "cb94b9de-f6d2-4135-befe-10642d42559b"
+	TEST_CHKDIR       = "/var/optima/zun1/hoge"
+	TEST_IMAGE_NAME   = "yotanagai/loop"
+	TEST_CONTAINER_ID = "geihgaoeihgiaoew"
 )
 
 func TestRegistLoadIndicator(t *testing.T) {
@@ -101,4 +102,11 @@ func TestGetHostOrderByLoadIndicator(t *testing.T) {
 		t.Fatalf("cannot get host orderby load indicator = %v", err)
 	}
 	t.Logf("get hosts = %v", hosts)
+}
+
+func TestRegistrAvatar(t *testing.T) {
+	err := RegistAvatar(TEST_UUID, TEST_HOST_NAME, TEST_CONTAINER_ID)
+	if err != nil {
+		t.Fatalf("connot regist avatar record = %v", err)
+	}
 }
