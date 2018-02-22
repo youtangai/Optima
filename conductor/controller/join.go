@@ -153,12 +153,19 @@ func JoinController(c *gin.Context) {
 			}
 			log.Println("join:restore current container")
 			//元のコンテナを削除する
-			err = deleteContainer(container.UUID)
+			// err = deleteContainer(container.UUID)
+			// if err != nil {
+			// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			// 	log.Fatalf("join:cannot delete container err = %+v", err)
+			// }
+			// log.Println("join:complete delete current container")
+			//Avatarテーブルへの登録を行う
+			err = db.RegistAvatar(targetContainer.UUID, container.Host, container.ContainerID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Fatalf("join:cannot delete container err = %+v", err)
+				log.Fatalf("failed regist avatar err = %+v", err)
 			}
-			log.Println("join:complete delete current container")
+			log.Println("join:regist avatar table")
 		}
 	}
 
