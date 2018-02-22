@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	PublicKeyName = "optima_key.pub"
+	publicKeyName = "optima_key.pub"
 )
 
 //CreateDirController is ディレクトリを作成するコントローラ
@@ -63,7 +63,7 @@ func JoinController(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		log.Fatal(err)
 	}
-	if bool := util.FileExists(PublicKeyName); bool {
+	if bool := util.FileExists(publicKeyName); bool {
 		//公開鍵が存在したら
 		initialJoin(hostName)
 	}
@@ -175,7 +175,7 @@ func JoinController(c *gin.Context) {
 func initialJoin(hostName string) error {
 	log.Println("pub key is exists")
 	// /root/.ssh/authorised_keyに公開鍵を追記
-	cmdstr := "cat /var/optima/" + hostName + "/" + PublicKeyName + " >> /root/.ssh/authorized_keys"
+	cmdstr := "cat /var/optima/" + hostName + "/" + publicKeyName + " >> /root/.ssh/authorized_keys"
 	log.Printf("cmdstr = %s", cmdstr)
 	_, err := exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
@@ -183,7 +183,7 @@ func initialJoin(hostName string) error {
 		return err
 	}
 	// 公開鍵の削除
-	cmdstr = "rm -f /var/optima/" + hostName + "/" + PublicKeyName
+	cmdstr = "rm -f /var/optima/" + hostName + "/" + publicKeyName
 	_, err = exec.Command("sh", "-c", cmdstr).Output()
 	if err != nil {
 		log.Fatal(err)
